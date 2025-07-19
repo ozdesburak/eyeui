@@ -1,0 +1,132 @@
+<div class="group relative overflow-hidden rounded-2xl backdrop-blur-xl border shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer hover:-translate-y-1 h-80" 
+     [ngClass]="{
+       'bg-green-50/90 dark:bg-green-900/20 border-green-200/50 dark:border-green-700/50': table.status === 'available',
+       'bg-orange-50/90 dark:bg-orange-900/20 border-orange-200/50 dark:border-orange-700/50': table.status === 'occupied',
+       'bg-blue-50/90 dark:bg-blue-900/20 border-blue-200/50 dark:border-blue-700/50': table.status === 'reserved',
+       'bg-gray-50/90 dark:bg-gray-900/20 border-gray-200/50 dark:border-gray-700/50': table.status === 'cleaning',
+       'bg-white/90 dark:bg-slate-800/90 border-slate-200/50 dark:border-slate-700/50': !table.status
+     }" 
+     (click)="onCardClick()"
+     title="Masa {{ table.number }}">
+  
+  <!-- Modern Status Indicator - Top Right -->
+  <div class="absolute top-4 right-4 z-10">
+    <div class="flex items-center gap-2">
+      <!-- Status Dot -->
+      <div [class]="'h-3 w-3 rounded-full shadow-sm ' + getStatusColor()"></div>
+      
+      <!-- Payment Indicator -->
+      <div *ngIf="table.isPaidOnline" class="h-3 w-3 rounded-full bg-green-500 shadow-sm flex items-center justify-center">
+        <svg class="h-2 w-2 text-white" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+        </svg>
+      </div>
+    </div>
+  </div>
+  <!-- Background Gradient -->
+  <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+       [ngClass]="{
+         'bg-gradient-to-br from-green-100/30 via-green-50/20 to-emerald-100/30 dark:from-green-800/10 dark:via-green-700/5 dark:to-emerald-800/10': table.status === 'available',
+         'bg-gradient-to-br from-orange-100/30 via-orange-50/20 to-red-100/30 dark:from-orange-800/10 dark:via-orange-700/5 dark:to-red-800/10': table.status === 'occupied',
+         'bg-gradient-to-br from-blue-100/30 via-blue-50/20 to-indigo-100/30 dark:from-blue-800/10 dark:via-blue-700/5 dark:to-indigo-800/10': table.status === 'reserved',
+         'bg-gradient-to-br from-gray-100/30 via-gray-50/20 to-slate-100/30 dark:from-gray-800/10 dark:via-gray-700/5 dark:to-slate-800/10': table.status === 'cleaning',
+         'bg-gradient-to-br from-blue-50/30 via-purple-50/20 to-pink-50/30 dark:from-blue-900/10 dark:via-purple-900/5 dark:to-pink-900/10': !table.status
+       }"></div>
+  
+  <!-- Header -->
+  <div class="relative flex items-center justify-between mb-4 p-4">
+    <div class="flex items-center gap-3">
+      <div class="flex flex-col justify-center">
+        <h3 class="text-lg font-bold text-slate-900 dark:text-white leading-tight mb-1">{{ table.name || ('Masa ' + table.number) }}</h3>
+        <div *ngIf="table.region" class="text-xs text-slate-500 dark:text-slate-400 mb-1">{{ table.region }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="relative flex-1 space-y-3 px-4 flex flex-col">
+    <div class="grid grid-cols-2 gap-3">
+      <!-- Kapasite kutusu kaldırıldı, yerine servis durumu badge'i eklendi -->
+      <div class="flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-xl p-2.5 border border-blue-200/50 dark:border-blue-700/50 min-h-[64px]">
+        <div class="flex items-center gap-1.5 mb-1">
+          <svg class="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+          </svg>
+          <span class="text-xs font-medium text-blue-700 dark:text-blue-300">Servis Durumu</span>
+        </div>
+        <ng-container *ngIf="getOrderProductCount() > 0">
+          <span class="inline-flex items-center min-w-[80px] px-1.5 py-0.5 rounded-full text-[11px] font-semibold shadow-md animate-pulse"
+            [ngClass]="{
+              'bg-gradient-to-r from-yellow-400 to-yellow-600 text-white': (table.currentOrder?.processStatus || table.activeOrder?.processStatus) === 'preparing',
+              'bg-gradient-to-r from-green-400 to-emerald-600 text-white': (table.currentOrder?.processStatus || table.activeOrder?.processStatus) === 'served',
+              'bg-gradient-to-r from-slate-400 to-slate-600 text-white': !(table.currentOrder?.processStatus || table.activeOrder?.processStatus)
+            }">
+            <svg *ngIf="(table.currentOrder?.processStatus || table.activeOrder?.processStatus) === 'preparing'" class="h-3 w-3 mr-1 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="4" class="opacity-25"/><path d="M4 12a8 8 0 018-8" stroke-width="4" class="opacity-75"/></svg>
+            <svg *ngIf="(table.currentOrder?.processStatus || table.activeOrder?.processStatus) === 'served'" class="h-3 w-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+            <svg *ngIf="!(table.currentOrder?.processStatus || table.activeOrder?.processStatus)" class="h-3 w-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2" class="opacity-50"/></svg>
+            <span>
+              {{ (table.currentOrder?.processStatus || table.activeOrder?.processStatus) === 'preparing' ? 'Hazırlanıyor' :
+                 (table.currentOrder?.processStatus || table.activeOrder?.processStatus) === 'served' ? 'Servis Edildi' :
+                 'Beklemede' }}
+            </span>
+          </span>
+        </ng-container>
+      </div>
+
+      <div class="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-xl p-2.5 border border-purple-200/50 dark:border-purple-700/50">
+        <div class="flex items-center gap-1.5 mb-1">
+          <svg class="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+          </svg>
+          <span class="text-xs font-medium text-purple-700 dark:text-purple-300">Sipariş</span>
+        </div>
+        <p class="text-base font-bold text-purple-900 dark:text-purple-100">{{ getOrderProductCount() }} Ürün</p>
+      </div>
+    </div>
+
+    <div class="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-xl p-2.5 border border-green-200/50 dark:border-green-700/50">
+      <div class="flex items-center gap-1.5 mb-1">
+        <svg class="h-3.5 w-3.5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+        </svg>
+        <span class="text-xs font-medium text-green-700 dark:text-green-300">Toplam Tutar</span>
+      </div>
+      <p class="text-base font-bold text-green-900 dark:text-green-100">{{ getFormattedAmount() }}</p>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="relative flex items-center justify-between mt-4 px-4 pb-6">
+    <!--
+    <select 
+      [value]="table.status"
+      (change)="onStatusChange($event)"
+      (click)="$event.stopPropagation()"
+      class="text-xs border border-slate-200 dark:border-slate-600 rounded-lg px-2 py-1.5 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 shadow-sm"
+      style="--tw-ring-color: var(--primary); --tw-border-opacity: 1; border-color: var(--primary);">
+      <option value="available">Müsait</option>
+      <option value="occupied">Dolu</option>
+      <option value="reserved">Rezerve</option>
+      <option value="cleaning">Temizlik</option>
+    </select>
+    -->
+
+    <!--
+    <button 
+      class="group relative px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 shadow-sm hover:shadow-md border transition-all duration-200"
+      [style.background]="'linear-gradient(to right, var(--primary), var(--primary))'"
+      [style.color]="'var(--primary-foreground)'"
+      [style.border-color]="'var(--primary)'"
+      (click)="$event.stopPropagation(); onCardClick()">
+      <div class="flex items-center gap-1.5">
+        <svg class="h-3 w-3 transition-transform group-hover:scale-105" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+        </svg>
+        <span class="hidden sm:inline">Detay</span>
+        <span class="sm:hidden">...</span>
+      </div>
+    </button>
+    -->
+  </div>
+</div> 

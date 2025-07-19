@@ -1,0 +1,709 @@
+<div class="p-6 bg-gray-50 dark:bg-gray-950 min-h-screen" *ngIf="employee">
+  <!-- Header -->
+  <div class="mb-8">
+    <div class="flex items-center gap-4 mb-4">
+      <button 
+        (click)="goBack()"
+        class="p-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-white dark:hover:bg-gray-800 rounded-lg transition-colors"
+      >
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+      </button>
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Çalışan Detayı</h1>
+    </div>
+    <p class="text-gray-600 dark:text-gray-300">Çalışan bilgileri, izinler, vardiyalar ve performans takibi</p>
+  </div>
+
+  <!-- Employee Info Card -->
+  <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-gray-700 mb-6">
+    <div class="flex flex-col lg:flex-row lg:items-center gap-6">
+      <div class="flex-shrink-0">
+        <img 
+          [src]="employee.avatar || 'assets/avatars/avt-01.jpg'" 
+          [alt]="employee.name"
+          class="h-24 w-24 rounded-full object-cover border-4 border-gray-100"
+        >
+      </div>
+      <div class="flex-1">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <div>
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">{{ employee.name }}</h2>
+            <div class="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-300">
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2V6"></path>
+                </svg>
+                {{ employee.position }}
+              </div>
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                </svg>
+                {{ employee.department }}
+              </div>
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                {{ employee.workingHours }}
+              </div>
+            </div>
+          </div>
+          <div class="flex flex-col sm:flex-row gap-3">
+            <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
+              {{ employee.status === 'active' ? 'Aktif' : employee.status === 'inactive' ? 'Pasif' : 'İzinde' }}
+            </span>
+            <div class="text-right">
+              <div class="text-sm text-gray-600 dark:text-gray-300">Maaş</div>
+              <div class="text-lg font-bold text-gray-900 dark:text-white">{{ employee.salary | currency:'TRY':'symbol':'1.0-0' }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+    <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-gray-700">
+      <div class="flex items-center">
+        <div class="p-3 bg-blue-100 rounded-lg">
+          <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Performans</p>
+          <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ getAverageRating() }}/5</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-gray-700">
+      <div class="flex items-center">
+        <div class="p-3 bg-green-100 rounded-lg">
+          <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          </svg>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Devam Oranı</p>
+          <p class="text-2xl font-bold text-gray-900 dark:text-white">%{{ getAttendanceRate() }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-gray-700">
+      <div class="flex items-center">
+        <div class="p-3 bg-yellow-100 rounded-lg">
+          <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Toplam İzin</p>
+          <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ getTotalLeaveDays() }} gün</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-gray-700">
+      <div class="flex items-center">
+        <div class="p-3 bg-purple-100 rounded-lg">
+          <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          </svg>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-gray-600 dark:text-gray-300">İşe Başlama</p>
+          <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ employee.hireDate | date:'MMM yyyy' }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+    <div class="border-b border-gray-200 dark:border-gray-700">
+      <nav class="flex space-x-8 px-6" aria-label="Tabs">
+        <button
+          (click)="setActiveTab('profile')"
+          [class]="activeTab === 'profile' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white hover:border-gray-300 dark:hover:border-gray-600'"
+          class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
+        >
+          Profil
+        </button>
+        <button
+          (click)="setActiveTab('leaves')"
+          [class]="activeTab === 'leaves' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white hover:border-gray-300 dark:hover:border-gray-600'"
+          class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
+        >
+          İzinler
+        </button>
+        <button
+          (click)="setActiveTab('shifts')"
+          [class]="activeTab === 'shifts' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white hover:border-gray-300 dark:hover:border-gray-600'"
+          class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
+        >
+          Vardiyalar
+        </button>
+        <button
+          (click)="setActiveTab('performance')"
+          [class]="activeTab === 'performance' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white hover:border-gray-300 dark:hover:border-gray-600'"
+          class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
+        >
+          Performans
+        </button>
+        <button
+          (click)="setActiveTab('attendance')"
+          [class]="activeTab === 'attendance' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white hover:border-gray-300 dark:hover:border-gray-600'"
+          class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
+        >
+          Devam Durumu
+        </button>
+      </nav>
+    </div>
+
+    <div class="p-6">
+      <!-- Profile Tab -->
+      <div *ngIf="activeTab === 'profile'" class="space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Kişisel Bilgiler</h3>
+            <div class="space-y-3">
+              <div class="flex justify-between">
+                <span class="text-gray-600 dark:text-gray-300">Ad Soyad:</span>
+                <span class="font-medium dark:text-white">{{ employee.name }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600 dark:text-gray-300">E-posta:</span>
+                <span class="font-medium dark:text-white">{{ employee.email }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600 dark:text-gray-300">Telefon:</span>
+                <span class="font-medium dark:text-white">{{ employee.phone }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600 dark:text-gray-300">Doğum Tarihi:</span>
+                <span class="font-medium dark:text-white">{{ employee.birthDate | date:'dd.MM.yyyy' }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600 dark:text-gray-300">TC Kimlik No:</span>
+                <span class="font-medium dark:text-white">{{ employee.idNumber }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600 dark:text-gray-300">Adres:</span>
+                <span class="font-medium dark:text-white">{{ employee.address }}</span>
+              </div>
+            </div>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">İş Bilgileri</h3>
+            <div class="space-y-3">
+              <div class="flex justify-between">
+                <span class="text-gray-600 dark:text-gray-300">Pozisyon:</span>
+                <span class="font-medium dark:text-white">{{ employee.position }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600 dark:text-gray-300">Departman:</span>
+                <span class="font-medium dark:text-white">{{ employee.department }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600 dark:text-gray-300">İşe Başlama:</span>
+                <span class="font-medium dark:text-white">{{ employee.hireDate | date:'dd.MM.yyyy' }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600 dark:text-gray-300">Çalışma Saatleri:</span>
+                <span class="font-medium dark:text-white">{{ employee.workingHours }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600 dark:text-gray-300">Maaş:</span>
+                <span class="font-medium dark:text-white">{{ employee.salary | currency:'TRY':'symbol':'1.0-0' }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600 dark:text-gray-300">Banka Hesabı:</span>
+                <span class="font-medium dark:text-white">{{ employee.bankAccount }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Acil Durum İletişim</h3>
+          <div class="space-y-3">
+            <div class="flex justify-between">
+              <span class="text-gray-600 dark:text-gray-300">Acil Durum Kişisi:</span>
+              <span class="font-medium dark:text-white">{{ employee.emergencyContact }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-600 dark:text-gray-300">Acil Durum Telefonu:</span>
+              <span class="font-medium dark:text-white">{{ employee.emergencyPhone }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Leaves Tab -->
+      <div *ngIf="activeTab === 'leaves'" class="space-y-6">
+        <div class="flex justify-between items-center">
+          <h3 class="text-lg font-semibold text-gray-900">İzin Talepleri</h3>
+          <button 
+            (click)="openLeaveModal()"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            İzin Talebi Ekle
+          </button>
+        </div>
+        
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead class="bg-gray-50 border-b border-gray-200">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">İzin Türü</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Başlangıç</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bitiş</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Süre</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sebep</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Durum</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">İşlemler</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <tr *ngFor="let leave of leaveRequests" class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  {{ getLeaveTypeText(leave.type) }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {{ leave.startDate | date:'dd.MM.yyyy' }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {{ leave.endDate | date:'dd.MM.yyyy' }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {{ Math.ceil((leave.endDate.getTime() - leave.startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1 }} gün
+                </td>
+                <td class="px-6 py-4 text-sm text-gray-900">
+                  {{ leave.reason }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full" 
+                        [ngClass]="getLeaveStatusClass(leave.status)">
+                    {{ getLeaveStatusText(leave.status) }}
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <div class="flex items-center gap-2" *ngIf="leave.status === 'pending'">
+                    <button 
+                      (click)="approveLeave(leave.id)"
+                      class="text-green-600 hover:text-green-900 transition-colors"
+                    >
+                      Onayla
+                    </button>
+                    <button 
+                      (click)="rejectLeave(leave.id)"
+                      class="text-red-600 hover:text-red-900 transition-colors"
+                    >
+                      Reddet
+                    </button>
+                  </div>
+                  <div *ngIf="leave.status !== 'pending'">
+                    <div class="text-xs text-gray-500">
+                      {{ leave.approvedBy }}
+                    </div>
+                    <div class="text-xs text-gray-500" *ngIf="leave.approvedDate">
+                      {{ leave.approvedDate | date:'dd.MM.yyyy' }}
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Shifts Tab -->
+      <div *ngIf="activeTab === 'shifts'" class="space-y-6">
+        <div class="flex justify-between items-center">
+          <h3 class="text-lg font-semibold text-gray-900">Vardiya Planlaması</h3>
+          <button 
+            (click)="openShiftModal()"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            Vardiya Ekle
+          </button>
+        </div>
+        
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead class="bg-gray-50 border-b border-gray-200">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tarih</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vardiya Türü</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Başlangıç</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bitiş</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Durum</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notlar</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <tr *ngFor="let shift of shifts" class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  {{ shift.date | date:'dd.MM.yyyy' }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {{ getShiftTypeText(shift.type) }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {{ shift.startTime }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {{ shift.endTime }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full" 
+                        [ngClass]="getShiftStatusClass(shift.status)">
+                    {{ getShiftStatusText(shift.status) }}
+                  </span>
+                </td>
+                <td class="px-6 py-4 text-sm text-gray-900">
+                  {{ shift.notes || '-' }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Performance Tab -->
+      <div *ngIf="activeTab === 'performance'" class="space-y-6">
+        <div class="flex justify-between items-center">
+          <h3 class="text-lg font-semibold text-gray-900">Performans Değerlendirmeleri</h3>
+          <button 
+            (click)="openPerformanceModal()"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            Değerlendirme Ekle
+          </button>
+        </div>
+        
+        <div class="space-y-4">
+          <div *ngFor="let performance of performances" class="bg-gray-50 rounded-lg p-4">
+            <div class="flex justify-between items-start mb-3">
+              <div>
+                <h4 class="font-medium text-gray-900">{{ getPerformanceCategoryText(performance.category) }}</h4>
+                <p class="text-sm text-gray-600">{{ performance.date | date:'dd.MM.yyyy' }}</p>
+              </div>
+              <div class="flex items-center gap-1">
+                <span class="text-sm font-medium text-gray-900">{{ performance.rating }}/5</span>
+                <div class="flex">
+                  <svg *ngFor="let star of [1,2,3,4,5]" 
+                       [class]="star <= performance.rating ? 'text-yellow-400' : 'text-gray-300'"
+                       class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <p class="text-sm text-gray-700 mb-2">{{ performance.comments }}</p>
+            <p class="text-xs text-gray-500">Değerlendiren: {{ performance.evaluator }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Attendance Tab -->
+      <div *ngIf="activeTab === 'attendance'" class="space-y-6">
+        <div class="flex justify-between items-center">
+          <h3 class="text-lg font-semibold text-gray-900">Devam Durumu</h3>
+        </div>
+        
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead class="bg-gray-50 border-b border-gray-200">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tarih</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Giriş</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Çıkış</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Toplam Saat</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Durum</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <tr *ngFor="let attendance of attendances" class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  {{ attendance.date | date:'dd.MM.yyyy' }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {{ attendance.checkIn | date:'HH:mm' }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {{ attendance.checkOut | date:'HH:mm' }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {{ attendance.totalHours }} saat
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full" 
+                        [ngClass]="getAttendanceStatusClass(attendance.status)">
+                    {{ getAttendanceStatusText(attendance.status) }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Leave Request Modal -->
+<div *ngIf="showLeaveModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white rounded-xl p-6 w-full max-w-md mx-4">
+    <div class="flex items-center justify-between mb-6">
+      <h3 class="text-lg font-semibold text-gray-900">İzin Talebi Ekle</h3>
+      <button (click)="closeModals()" class="text-gray-400 hover:text-gray-600">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <form (ngSubmit)="submitLeaveRequest()" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">İzin Türü</label>
+        <select 
+          [(ngModel)]="newLeaveRequest.type" 
+          name="leaveType"
+          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          required
+        >
+          <option *ngFor="let type of leaveTypes" [value]="type.value">{{ type.label }}</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Başlangıç Tarihi</label>
+        <input 
+          type="date" 
+          [(ngModel)]="newLeaveRequest.startDate" 
+          name="startDate"
+          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          required
+        >
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Bitiş Tarihi</label>
+        <input 
+          type="date" 
+          [(ngModel)]="newLeaveRequest.endDate" 
+          name="endDate"
+          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          required
+        >
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Sebep</label>
+        <textarea 
+          [(ngModel)]="newLeaveRequest.reason" 
+          name="reason"
+          rows="3"
+          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          required
+        ></textarea>
+      </div>
+
+      <div class="flex gap-3 pt-4">
+        <button 
+          type="button"
+          (click)="closeModals()"
+          class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+        >
+          İptal
+        </button>
+        <button 
+          type="submit"
+          class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+        >
+          Ekle
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Shift Modal -->
+<div *ngIf="showShiftModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white rounded-xl p-6 w-full max-w-md mx-4">
+    <div class="flex items-center justify-between mb-6">
+      <h3 class="text-lg font-semibold text-gray-900">Vardiya Ekle</h3>
+      <button (click)="closeModals()" class="text-gray-400 hover:text-gray-600">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <form (ngSubmit)="submitShift()" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Tarih</label>
+        <input 
+          type="date" 
+          [(ngModel)]="newShift.date" 
+          name="shiftDate"
+          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          required
+        >
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Vardiya Türü</label>
+        <select 
+          [(ngModel)]="newShift.type" 
+          name="shiftType"
+          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          required
+        >
+          <option *ngFor="let type of shiftTypes" [value]="type.value">{{ type.label }}</option>
+        </select>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Başlangıç</label>
+          <input 
+            type="time" 
+            [(ngModel)]="newShift.startTime" 
+            name="startTime"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            required
+          >
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Bitiş</label>
+          <input 
+            type="time" 
+            [(ngModel)]="newShift.endTime" 
+            name="endTime"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            required
+          >
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Notlar</label>
+        <textarea 
+          [(ngModel)]="newShift.notes" 
+          name="shiftNotes"
+          rows="2"
+          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        ></textarea>
+      </div>
+
+      <div class="flex gap-3 pt-4">
+        <button 
+          type="button"
+          (click)="closeModals()"
+          class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+        >
+          İptal
+        </button>
+        <button 
+          type="submit"
+          class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+        >
+          Ekle
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Performance Modal -->
+<div *ngIf="showPerformanceModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white rounded-xl p-6 w-full max-w-md mx-4">
+    <div class="flex items-center justify-between mb-6">
+      <h3 class="text-lg font-semibold text-gray-900">Performans Değerlendirmesi</h3>
+      <button (click)="closeModals()" class="text-gray-400 hover:text-gray-600">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <form (ngSubmit)="submitPerformance()" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Değerlendirme Kategorisi</label>
+        <select 
+          [(ngModel)]="newPerformance.category" 
+          name="perfCategory"
+          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          required
+        >
+          <option *ngFor="let category of performanceCategories" [value]="category.value">{{ category.label }}</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Tarih</label>
+        <input 
+          type="date" 
+          [(ngModel)]="newPerformance.date" 
+          name="perfDate"
+          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          required
+        >
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Puan (1-5)</label>
+        <input 
+          type="number" 
+          [(ngModel)]="newPerformance.rating" 
+          name="rating"
+          min="1" max="5"
+          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          required
+        >
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Yorumlar</label>
+        <textarea 
+          [(ngModel)]="newPerformance.comments" 
+          name="comments"
+          rows="3"
+          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          required
+        ></textarea>
+      </div>
+
+      <div class="flex gap-3 pt-4">
+        <button 
+          type="button"
+          (click)="closeModals()"
+          class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+        >
+          İptal
+        </button>
+        <button 
+          type="submit"
+          class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+        >
+          Ekle
+        </button>
+      </div>
+    </form>
+  </div>
+</div> 

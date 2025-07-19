@@ -1,0 +1,183 @@
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+  <!-- Header Section -->
+  <div class="relative overflow-hidden bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-700/50">
+    <div class="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-pink-600/10"></div>
+    <div class="relative px-6 py-8 sm:px-8 sm:py-12">
+      <div class="max-w-7xl mx-auto">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+          <div class="space-y-2">
+            <div class="flex items-center gap-3">
+              <div class="h-10 w-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
+                <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M21 21v-7a2 2 0 00-2-2H5a2 2 0 00-2 2v7h18zM3 7h18M5 7v10a2 2 0 002 2h10a2 2 0 002-2V7"></path>
+                </svg>
+              </div>
+              <div>
+                <h1 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
+                  Masa Yönetimi
+                </h1>
+                <p class="text-slate-600 dark:text-slate-400 text-sm sm:text-base">
+                  Restoran masalarınızı profesyonelce yönetin
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center gap-4">
+            <div class="hidden sm:flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+              <div class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
+              <span>Sistem Aktif</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="px-6 py-8 sm:px-8 sm:py-12">
+    <div class="max-w-7xl mx-auto space-y-8">
+
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+        <!-- Toplam Masa -->
+        <div class="flex items-center gap-3 rounded-2xl bg-blue-50 dark:bg-blue-900/20 shadow-sm px-4 py-3">
+          <div class="h-9 w-9 rounded-xl bg-blue-500/10 flex items-center justify-center">
+            <svg class="h-5 w-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M21 21v-7a2 2 0 00-2-2H5a2 2 0 00-2 2v7h18zM3 7h18M5 7v10a2 2 0 002 2h10a2 2 0 002-2V7"></path>
+            </svg>
+          </div>
+          <div class="flex-1">
+            <div class="text-xs text-blue-600 dark:text-blue-400 font-medium">Toplam</div>
+          </div>
+          <div class="text-xl font-bold text-blue-900 dark:text-blue-100">{{ filteredTables.length }}</div>
+        </div>
+        <!-- Müsait Masalar -->
+        <div class="flex items-center gap-3 rounded-2xl bg-green-50 dark:bg-green-900/20 shadow-sm px-4 py-3">
+          <div class="h-9 w-9 rounded-xl bg-green-500/10 flex items-center justify-center">
+            <svg class="h-5 w-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <div class="flex-1">
+            <div class="text-xs text-green-600 dark:text-green-400 font-medium">Müsait</div>
+          </div>
+          <div class="text-xl font-bold text-green-900 dark:text-green-100">{{ availableTables.length }}</div>
+        </div>
+        <!-- Dolu Masalar -->
+        <div class="flex items-center gap-3 rounded-2xl bg-orange-50 dark:bg-orange-900/20 shadow-sm px-4 py-3">
+          <div class="h-9 w-9 rounded-xl bg-orange-500/10 flex items-center justify-center">
+            <svg class="h-5 w-5 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <div class="flex-1">
+            <div class="text-xs text-orange-600 dark:text-orange-400 font-medium">Dolu</div>
+          </div>
+          <div class="text-xl font-bold text-orange-900 dark:text-orange-100">{{ occupiedTables.length }}</div>
+        </div>
+        <!-- Rezerve Masalar -->
+        <div class="flex items-center gap-3 rounded-2xl bg-purple-50 dark:bg-purple-900/20 shadow-sm px-4 py-3">
+          <div class="h-9 w-9 rounded-xl bg-purple-500/10 flex items-center justify-center">
+            <svg class="h-5 w-5 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+          </div>
+          <div class="flex-1">
+            <div class="text-xs text-purple-600 dark:text-purple-400 font-medium">Rezerve</div>
+          </div>
+          <div class="text-xl font-bold text-purple-900 dark:text-purple-100">{{ reservedTables.length }}</div>
+        </div>
+      </div>
+
+  <!-- Filters Section -->
+  <div class="relative">
+    <app-table-filters (filtersChange)="onFiltersChange($event)"></app-table-filters>
+  </div>
+
+  <!-- Tables Section -->
+  <div class="space-y-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Masalar</h2>
+        <p class="text-slate-600 dark:text-slate-400 text-sm">
+          {{ filteredTables.length }} masa bulundu
+        </p>
+      </div>
+      <div class="flex items-center gap-2">
+        <div class="h-2 w-2 rounded-full bg-green-500"></div>
+        <span class="text-sm text-slate-600 dark:text-slate-400">Gerçek zamanlı</span>
+        <button (click)="openAddTableModal()" class="ml-4 px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition">
+          + Masa Ekle
+        </button>
+      </div>
+    </div>
+    
+    <!-- Simple Grid Layout -->
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+      <div *ngFor="let table of filteredTables; trackBy: trackByTableId" class="grid-item">
+        <app-table-card 
+          [table]="table"
+          (tableClick)="onTableClick($event)"
+          (statusChange)="onTableStatusChange($event.table, $event.status)">
+        </app-table-card>
+      </div>
+    </div>
+
+    <!-- No Results Message -->
+    <div *ngIf="filteredTables.length === 0" class="text-center py-16">
+      <div class="max-w-md mx-auto">
+        <div class="h-24 w-24 mx-auto mb-6 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+          <svg class="h-12 w-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.47-.881-6.08-2.33"></path>
+          </svg>
+        </div>
+        <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-2">Masa Bulunamadı</h3>
+        <p class="text-slate-600 dark:text-slate-400">Filtrelere uygun masa bulunamadı. Lütfen filtrelerinizi değiştirin.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table Detail Modal -->
+  <app-table-detail 
+    *ngIf="showDetail && selectedTable"
+    [table]="selectedTable"
+    (close)="onCloseDetail()"
+    (tableUpdate)="onTableUpdate($event)">
+  </app-table-detail>
+
+  <!-- Add Table Modal -->
+  <div *ngIf="addTableModalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+    <div class="bg-white dark:bg-slate-900 rounded-xl shadow-lg p-6 w-full max-w-md relative">
+      <button (click)="closeAddTableModal()" class="absolute top-2 right-2 text-slate-400 hover:text-slate-700 dark:hover:text-white">
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+      <h3 class="text-lg font-bold mb-4 text-slate-900 dark:text-white">Yeni Masa Ekle</h3>
+      <form (ngSubmit)="submitAddTable()" autocomplete="off">
+        <div class="mb-3">
+          <label class="block text-sm font-medium mb-1">Masa Adı</label>
+          <input [(ngModel)]="addTableForm.name" name="name" required class="w-full px-3 py-2 rounded border border-slate-300 dark:bg-slate-800 dark:text-white" />
+        </div>
+        <div class="mb-3">
+          <label class="block text-sm font-medium mb-1">Grup/Bölge</label>
+          <input [(ngModel)]="addTableForm.group" name="group" required class="w-full px-3 py-2 rounded border border-slate-300 dark:bg-slate-800 dark:text-white" />
+        </div>
+        <div class="mb-3">
+          <label class="block text-sm font-medium mb-1">Kapasite</label>
+          <input type="number" [(ngModel)]="addTableForm.capacity" name="capacity" min="1" class="w-full px-3 py-2 rounded border border-slate-300 dark:bg-slate-800 dark:text-white" />
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium mb-1">Durum</label>
+          <select [(ngModel)]="addTableForm.status" name="status" class="w-full px-3 py-2 rounded border border-slate-300 dark:bg-slate-800 dark:text-white">
+            <option value="available">Müsait</option>
+            <option value="occupied">Dolu</option>
+            <option value="reserved">Rezerve</option>
+          </select>
+        </div>
+        <div class="flex justify-end gap-2">
+          <button type="button" (click)="closeAddTableModal()" class="px-4 py-2 rounded bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-white">İptal</button>
+          <button type="submit" class="px-4 py-2 rounded bg-blue-600 text-white font-semibold hover:bg-blue-700">Ekle</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div> 

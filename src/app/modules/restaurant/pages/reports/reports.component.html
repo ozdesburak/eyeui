@@ -1,0 +1,254 @@
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 p-6">
+  <!-- Header Section -->
+  <div class="mb-8">
+    <div class="bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl rounded-2xl p-6 border border-white/20 shadow-xl">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+        <div>
+          <h1 class="text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
+            Raporlar & Analitik
+          </h1>
+          <p class="text-slate-600 dark:text-slate-400 mt-2">
+            Detaylı raporlar ve performans analizleri
+          </p>
+        </div>
+        
+        <div class="flex items-center gap-4">
+          <button 
+            (click)="exportReport()"
+            class="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            Dışa Aktar
+          </button>
+          <button 
+            (click)="printReport()"
+            class="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+            </svg>
+            Yazdır
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl rounded-2xl p-6 border border-white/20 shadow-xl mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- Period Filter -->
+      <div>
+        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+          <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          </svg>
+          Dönem
+        </label>
+        <select 
+          [(ngModel)]="selectedPeriod"
+          (change)="onPeriodChange()"
+          class="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+          <option value="week">Bu Hafta</option>
+          <option value="month">Bu Ay</option>
+          <option value="quarter">Bu Çeyrek</option>
+          <option value="year">Bu Yıl</option>
+        </select>
+      </div>
+
+      <!-- Report Type Filter -->
+      <div>
+        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+          <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+          </svg>
+          Rapor Tipi
+        </label>
+        <select 
+          [(ngModel)]="selectedReportType"
+          (change)="onReportTypeChange()"
+          class="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+          <option value="sales">Satış Raporu</option>
+          <option value="products">Ürün Raporu</option>
+          <option value="tables">Masa Raporu</option>
+          <option value="payments">Ödeme Raporu</option>
+        </select>
+      </div>
+
+      <!-- Current Period Display -->
+      <div class="md:col-span-2">
+        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Seçili Dönem</label>
+        <div class="px-4 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+          <p class="text-lg font-semibold text-blue-900 dark:text-blue-100">{{ getPeriodLabel() }}</p>
+          <p class="text-sm text-blue-700 dark:text-blue-300">{{ getReportTypeLabel() }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Stats Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <!-- Total Revenue -->
+    <div class="bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl rounded-2xl p-6 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300">
+      <div class="flex items-center justify-between mb-4">
+        <div class="h-12 w-12 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 flex items-center justify-center shadow-lg">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+          </svg>
+        </div>
+        <div class="text-right">
+          <span [class]="'text-xs px-2 py-1 rounded-full font-medium ' + getRevenueGrowthColor() + ' ' + getRevenueGrowthBg()">
+            {{ getRevenueGrowth() }}
+          </span>
+        </div>
+      </div>
+      <div>
+        <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">Toplam Gelir</p>
+        <p class="text-2xl font-bold text-slate-800 dark:text-white mb-1">{{ totalRevenue | currency:'TRY':'symbol':'1.0-0' }}</p>
+        <p class="text-xs text-slate-500 dark:text-slate-400">Geçen döneme göre</p>
+      </div>
+    </div>
+
+    <!-- Total Orders -->
+    <div class="bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl rounded-2xl p-6 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300">
+      <div class="flex items-center justify-between mb-4">
+        <div class="h-12 w-12 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+          </svg>
+        </div>
+        <div class="text-right">
+          <span class="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-full font-medium">
+            +8.3%
+          </span>
+        </div>
+      </div>
+      <div>
+        <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">Toplam Sipariş</p>
+        <p class="text-2xl font-bold text-slate-800 dark:text-white mb-1">{{ totalOrders }}</p>
+        <p class="text-xs text-slate-500 dark:text-slate-400">Bu dönemde</p>
+      </div>
+    </div>
+
+    <!-- Average Order Value -->
+    <div class="bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl rounded-2xl p-6 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300">
+      <div class="flex items-center justify-between mb-4">
+        <div class="h-12 w-12 rounded-xl bg-gradient-to-r from-purple-500 to-pink-600 flex items-center justify-center shadow-lg">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+          </svg>
+        </div>
+        <div class="text-right">
+          <span class="text-xs text-purple-600 bg-purple-100 px-2 py-1 rounded-full font-medium">
+            +5.2%
+          </span>
+        </div>
+      </div>
+      <div>
+        <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">Ortalama Sipariş</p>
+        <p class="text-2xl font-bold text-slate-800 dark:text-white mb-1">{{ averageOrderValue | currency:'TRY':'symbol':'1.2-2' }}</p>
+        <p class="text-xs text-slate-500 dark:text-slate-400">Sipariş başına</p>
+      </div>
+    </div>
+
+    <!-- Growth Rate -->
+    <div class="bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl rounded-2xl p-6 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300">
+      <div class="flex items-center justify-between mb-4">
+        <div class="h-12 w-12 rounded-xl bg-gradient-to-r from-orange-500 to-red-600 flex items-center justify-center shadow-lg">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+          </svg>
+        </div>
+        <div class="text-right">
+          <span class="text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded-full font-medium">
+            Aktif
+          </span>
+        </div>
+      </div>
+      <div>
+        <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">Büyüme Oranı</p>
+        <p class="text-2xl font-bold text-slate-800 dark:text-white mb-1">{{ growthRate }}%</p>
+        <p class="text-xs text-slate-500 dark:text-slate-400">Aylık büyüme</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+    <!-- Sales Chart -->
+    <div class="bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl rounded-2xl p-6 border border-white/20 shadow-xl">
+      <h3 class="text-lg font-semibold text-slate-800 dark:text-white mb-6">Günlük Satış Grafiği</h3>
+      <div class="space-y-4">
+        <div *ngFor="let day of salesData" class="flex items-center gap-4">
+          <div class="w-12 text-sm font-medium text-slate-600 dark:text-slate-400">{{ day.date }}</div>
+          <div class="flex-1">
+            <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-8 relative overflow-hidden">
+              <div class="h-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full transition-all duration-1000 ease-out"
+                   [style.width]="getBarHeight(day.revenue)"></div>
+              <div class="absolute inset-0 flex items-center justify-center">
+                <span class="text-xs font-medium text-white">{{ day.revenue | currency:'TRY':'symbol':'1.0-0' }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="w-16 text-right">
+            <div class="text-sm font-semibold text-slate-800 dark:text-white">{{ day.orders }}</div>
+            <div class="text-xs text-slate-500 dark:text-slate-400">sipariş</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Products -->
+    <div class="bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl rounded-2xl p-6 border border-white/20 shadow-xl">
+      <h3 class="text-lg font-semibold text-slate-800 dark:text-white mb-6">En Çok Satan Ürünler</h3>
+      <div class="space-y-4">
+        <div *ngFor="let product of getTopProducts(); let i = index" class="flex items-center gap-4">
+          <div class="h-8 w-8 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 flex items-center justify-center text-white text-sm font-bold">
+            {{ i + 1 }}
+          </div>
+          <div class="flex-1">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-sm font-medium text-slate-800 dark:text-white">{{ product.name }}</span>
+              <span class="text-sm font-bold text-green-600 dark:text-green-400">{{ product.revenue | currency:'TRY':'symbol':'1.0-0' }}</span>
+            </div>
+            <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+              <div class="h-2 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full transition-all duration-1000 ease-out"
+                   [style.width.%]="getProductPercentage(product.sales)"></div>
+            </div>
+          </div>
+          <div class="w-16 text-right">
+            <div class="text-sm font-semibold text-slate-800 dark:text-white">{{ product.sales }}</div>
+            <div class="text-xs text-slate-500 dark:text-slate-400">satış</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detailed Report Table -->
+  <div class="bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl rounded-2xl p-6 border border-white/20 shadow-xl">
+    <h3 class="text-lg font-semibold text-slate-800 dark:text-white mb-6">Detaylı Rapor</h3>
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead>
+          <tr class="border-b border-slate-200 dark:border-slate-700">
+            <th class="text-left py-3 px-4 text-sm font-semibold text-slate-700 dark:text-slate-300">Dönem</th>
+            <th class="text-left py-3 px-4 text-sm font-semibold text-slate-700 dark:text-slate-300">Gelir</th>
+            <th class="text-left py-3 px-4 text-sm font-semibold text-slate-700 dark:text-slate-300">Sipariş</th>
+            <th class="text-left py-3 px-4 text-sm font-semibold text-slate-700 dark:text-slate-300">Ortalama</th>
+            <th class="text-left py-3 px-4 text-sm font-semibold text-slate-700 dark:text-slate-300">En Çok Satan</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let report of reportData" class="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50">
+            <td class="py-3 px-4 text-sm font-medium text-slate-800 dark:text-white">{{ report.period }}</td>
+            <td class="py-3 px-4 text-sm text-green-600 dark:text-green-400 font-semibold">{{ report.revenue | currency:'TRY':'symbol':'1.0-0' }}</td>
+            <td class="py-3 px-4 text-sm text-slate-600 dark:text-slate-400">{{ report.orders }}</td>
+            <td class="py-3 px-4 text-sm text-slate-600 dark:text-slate-400">{{ report.averageOrderValue | currency:'TRY':'symbol':'1.2-2' }}</td>
+            <td class="py-3 px-4 text-sm text-slate-600 dark:text-slate-400">{{ report.topProduct }} ({{ report.topProductSales }})</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div> 

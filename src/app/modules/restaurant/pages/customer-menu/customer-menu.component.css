@@ -1,0 +1,70 @@
+/* Masonry Columns (Pinterest Grid) */
+.masonry-columns {
+  column-count: 2;
+  column-gap: 0.15rem;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+@media (min-width: 600px) {
+  .masonry-columns { column-count: 3; }
+}
+@media (min-width: 900px) {
+  .masonry-columns { column-count: 4; }
+}
+.instagram-card {
+  display: block;
+  margin-bottom: 0.15rem;
+  break-inside: avoid;
+  border-radius: 16px;
+  overflow: hidden;
+  background: none;
+  box-shadow: none;
+  width: auto !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+}
+.no-radius {
+  border-radius: 0 !important;
+}
+.product-info {
+  padding: 0.5rem 0.75rem 0.75rem 0.75rem;
+  background: #fff;
+  border-top: 1px solid #f3f4f6;
+}
+@media (prefers-color-scheme: dark) {
+  .product-info {
+    background: #1e293b;
+    border-top: 1px solid #334155;
+  }
+}
+.product-overlay {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 0.5rem 0.7rem 0.4rem 0.7rem;
+  background: rgba(24, 24, 27, 0.07);
+  backdrop-filter: blur(6px);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-bottom-left-radius: inherit;
+  border-bottom-right-radius: inherit;
+}
+.product-name {
+  text-shadow: 0 2px 8px #0006;
+  font-size: 0.85rem;
+  font-weight: 500;
+  max-width: 70%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.product-price {
+  color: #ffb300;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-shadow: 0 2px 8px #0006;
+} 

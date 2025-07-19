@@ -1,0 +1,590 @@
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-zinc-50 dark:from-slate-900 dark:via-gray-900 dark:to-zinc-900">
+  <!-- Mobile Header -->
+  <header class="bg-white dark:bg-slate-800 shadow-lg sticky top-0 z-50 border-b border-gray-200 dark:border-slate-700">
+    <div class="px-4 py-3">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="text-2xl">🍽️</div>
+          <div>
+            <h1 class="text-lg font-bold text-gray-900 dark:text-white">Lezzetli Restoran</h1>
+            <p class="text-xs text-gray-600 dark:text-gray-400">Geleneksel lezzetler</p>
+          </div>
+        </div>
+        
+        <!-- Cart Button -->
+        <button 
+          (click)="showCart = !showCart"
+          class="relative bg-gradient-to-r from-orange-400 to-amber-500 hover:from-orange-500 hover:to-amber-600 text-white p-3 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+          </svg>
+          <span *ngIf="getCartItemCount() > 0" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold animate-pulse">
+            {{ getCartItemCount() }}
+          </span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Category Slider -->
+  <div class="bg-white dark:bg-slate-800 shadow-sm border-b border-gray-200 dark:border-slate-700">
+    <div class="px-4 py-4">
+      <div class="flex space-x-3 overflow-x-auto scrollbar-hide pb-2">
+        <button 
+          *ngFor="let category of categories"
+          (click)="selectCategory(category)"
+          [class]="selectedCategory?.id === category.id ? 'bg-gradient-to-r from-orange-400 to-amber-500 text-white shadow-lg scale-105' : 'bg-gray-50 dark:bg-slate-700 text-gray-700 dark:text-gray-300 shadow-sm hover:bg-gray-100 dark:hover:bg-slate-600'"
+          class="flex-shrink-0 px-4 py-2.5 rounded-xl font-medium transition-all duration-300 flex items-center space-x-2 min-w-max border border-gray-200 dark:border-slate-600"
+        >
+          <div class="w-6 h-6 flex items-center justify-center text-sm">
+            {{ category.icon }}
+          </div>
+          <span class="text-sm font-medium">{{ category.name }}</span>
+        </button>
+      </div>
+      
+      <!-- Scroll Indicator -->
+      <div class="flex justify-center mt-2">
+        <div class="flex space-x-1">
+          <div class="w-1.5 h-1.5 bg-orange-400 rounded-full animate-pulse"></div>
+          <div class="w-1.5 h-1.5 bg-orange-300 rounded-full animate-pulse" style="animation-delay: 0.2s;"></div>
+          <div class="w-1.5 h-1.5 bg-orange-200 rounded-full animate-pulse" style="animation-delay: 0.4s;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+  <!-- Menu Items -->
+  <div class="px-4 py-6 pb-24">
+    <div *ngIf="selectedCategory" class="space-y-4">
+      
+      <!-- Category Header -->
+      <div class="text-center mb-6">
+        <div class="flex items-center justify-center space-x-3 mb-2">
+          <div class="w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-500 rounded-full flex items-center justify-center text-white text-xl shadow-lg">
+            {{ selectedCategory.icon }}
+          </div>
+          <h2 class="text-xl font-bold text-gray-900">{{ selectedCategory.name }}</h2>
+        </div>
+        <p class="text-sm text-gray-600">{{ selectedCategory.description }}</p>
+      </div>
+
+      <!-- Grid View - 2 Columns -->
+      <div *ngIf="viewMode === 'grid-2'" class="grid grid-cols-2 gap-3">
+        <div
+          *ngFor="let item of getFilteredItems()"
+          class="product-card flex flex-col bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden hover:shadow-lg transition-all duration-300"
+        >
+          <div class="relative h-28 md:h-32 bg-gradient-to-br from-slate-50 to-gray-50 dark:from-slate-700 dark:to-gray-700">
+            <img
+              [src]="getItemImage(item)"
+              [alt]="item.name"
+              class="w-full h-full object-cover"
+              onerror="this.src='https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=300&h=200&fit=crop'"
+            >
+          </div>
+          <div class="flex flex-col flex-1 p-3">
+            <div class="flex justify-between items-start mb-1">
+              <h3 class="product-title">{{ item.name }}</h3>
+              <span class="product-price">{{ getPriceFormatted(item.price) }}</span>
+            </div>
+            <p class="product-desc mb-2">{{ item.description }}</p>
+            <div class="mt-auto">
+              <button
+                (click)="openItemModal(item)"
+                class="w-full bg-gradient-to-r from-orange-200 to-amber-200 hover:from-orange-300 hover:to-amber-300 dark:from-orange-800 dark:to-amber-800 dark:hover:from-orange-700 dark:hover:to-amber-700 text-orange-800 dark:text-orange-200 py-2 px-3 rounded-xl font-medium transition-all duration-300 text-xs"
+                [disabled]="!item.available"
+              >
+                {{ item.available ? 'Sipariş Ver' : 'Mevcut Değil' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grid View - 4 Columns (Gerçek Masonry Pinterest) -->
+      <div *ngIf="viewMode === 'grid-4'" class="masonry-columns">
+        <div *ngFor="let item of getFilteredItems(); let i = index" class="instagram-card" [ngClass]="{'no-radius': viewMode === 'grid-4'}">
+          <div class="relative">
+            <img [src]="getItemImage(item)" [alt]="item.name" [style.height]="getRandomHeight(i)" style="width:100%;display:block;object-fit:cover;" [ngStyle]="viewMode === 'grid-4' ? {'border-radius': '0'} : {'border-radius': '16px'}">
+            <div class="product-overlay">
+              <span class="product-name">{{ item.name }}</span>
+              <span class="product-price">{{ getPriceFormatted(item.price) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- List View -->
+      <div *ngIf="viewMode === 'list'" class="space-y-3">
+        <div 
+          *ngFor="let item of getFilteredItems()"
+          class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden hover:shadow-md transition-all duration-300"
+        >
+          <div class="flex">
+            <!-- Item Image -->
+            <div class="relative w-20 h-20 flex-shrink-0">
+              <img 
+                [src]="getItemImage(item)" 
+                [alt]="item.name"
+                class="w-full h-full object-cover"
+                onerror="this.src='https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=200&h=200&fit=crop'"
+              >
+              
+              <!-- Modern Badges -->
+              <div class="absolute top-1 left-1 flex flex-wrap gap-0.5">
+                <span *ngIf="item.isPopular" class="bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs px-1 py-0.5 rounded-full shadow-sm">
+                  🔥
+                </span>
+                <span *ngIf="item.isSpicy" class="bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs px-1 py-0.5 rounded-full shadow-sm">
+                  🌶️
+                </span>
+                <span *ngIf="item.isVegetarian" class="bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs px-1 py-0.5 rounded-full shadow-sm">
+                  🌱
+                </span>
+                <span *ngIf="item.isGlutenFree" class="bg-gradient-to-r from-rose-500 to-pink-500 text-white text-xs px-1 py-0.5 rounded-full shadow-sm">
+                  🌾
+                </span>
+              </div>
+            </div>
+
+            <!-- Item Info -->
+            <div class="flex-1 p-3">
+              <div class="flex justify-between items-start mb-1">
+                <h3 class="text-sm font-semibold text-gray-900 dark:text-white leading-tight">{{ item.name }}</h3>
+                <span class="text-sm font-bold text-orange-600 dark:text-orange-400">{{ getPriceFormatted(item.price) }}</span>
+              </div>
+              
+              <p class="text-xs text-gray-600 dark:text-gray-400 mb-2 line-clamp-2 leading-tight">{{ item.description }}</p>
+              
+              <!-- Compact Nutrition Info -->
+              <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-2">
+                <span class="flex items-center space-x-1">
+                  <span class="w-1 h-1 bg-orange-400 rounded-full"></span>
+                  <span>{{ item.calories }} kcal</span>
+                </span>
+                <span class="flex items-center space-x-1">
+                  <span class="w-1 h-1 bg-orange-400 rounded-full"></span>
+                  <span>{{ item.preparationTime }} dk</span>
+                </span>
+              </div>
+
+              <!-- Add to Cart Button -->
+              <button 
+                (click)="openItemModal(item)"
+                class="w-full bg-gradient-to-r from-orange-200 to-amber-200 hover:from-orange-300 hover:to-amber-300 dark:from-orange-800 dark:to-amber-800 dark:hover:from-orange-700 dark:hover:to-amber-700 text-orange-800 dark:text-orange-200 py-1.5 px-3 rounded-lg font-medium transition-all duration-300 text-xs transform hover:scale-105"
+                [disabled]="!item.available"
+              >
+                {{ item.available ? 'Sipariş Ver' : 'Mevcut Değil' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- No Items Found -->
+      <div *ngIf="getFilteredItems().length === 0" class="text-center py-12">
+        <div class="text-6xl mb-4">🍽️</div>
+        <h3 class="text-xl font-semibold text-gray-900 mb-2">Ürün bulunamadı</h3>
+        <p class="text-gray-600">Filtrelerinizi değiştirerek tekrar deneyin.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Menu -->
+  <footer class="fixed bottom-4 left-4 right-4 z-40">
+    <div class="flex items-center justify-around py-3 px-6 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-full shadow-lg border border-white/20 dark:border-slate-700/20">
+      <!-- Search Button -->
+      <button 
+        (click)="toggleSearch()"
+        class="flex flex-col items-center space-y-1 p-2 transition-colors"
+        [class]="showSearch ? 'text-orange-600 dark:text-orange-400' : 'text-gray-600 dark:text-gray-400'"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        <span class="text-xs font-medium">Ara</span>
+      </button>
+
+      <!-- Cart Button -->
+      <button 
+        (click)="showCart = !showCart"
+        class="relative flex flex-col items-center space-y-1 p-2 transition-colors"
+        [class]="showCart ? 'text-orange-600 dark:text-orange-400' : 'text-gray-600 dark:text-gray-400'"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+        </svg>
+        <span class="text-xs font-medium">Sepet</span>
+        <span *ngIf="getCartItemCount() > 0" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
+          {{ getCartItemCount() }}
+        </span>
+      </button>
+
+      <!-- View Mode Button -->
+      <button 
+        (click)="toggleViewMode()"
+        class="view-mode-button relative flex flex-col items-center space-y-1 p-2 transition-colors"
+        [class]="showViewMode ? 'text-orange-600 dark:text-orange-400' : 'text-gray-600 dark:text-gray-400'"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+        </svg>
+        <span class="text-xs font-medium">Görünüm</span>
+        
+        <!-- View Mode Dropdown -->
+        <div 
+          *ngIf="showViewMode"
+          class="view-mode-dropdown absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 py-1 min-w-[100px] z-50"
+        >
+          <div class="view-mode-dropdown-arrow"></div>
+          <button 
+            (click)="setViewMode('grid-2'); showViewMode = false"
+            class="w-full flex items-center justify-center p-2 transition-colors"
+            [class]="viewMode === 'grid-2' ? 'text-orange-600 dark:text-orange-400' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700'"
+            title="2'li Grid"
+          >
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M3 3h8v8H3V3zm0 10h8v8H3v-8zM13 3h8v8h-8V3zm0 10h8v8h-8v-8z"/>
+            </svg>
+          </button>
+          <button 
+            (click)="setViewMode('grid-4'); showViewMode = false"
+            class="w-full flex items-center justify-center p-2 transition-colors"
+            [class]="viewMode === 'grid-4' ? 'text-orange-600 dark:text-orange-400' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700'"
+            title="4'lü Grid"
+          >
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M3 3h6v6H3V3zm0 8h6v6H3v-6zM11 3h6v6h-6V3zm0 8h6v6h-6v-6z"/>
+            </svg>
+          </button>
+          <button 
+            (click)="setViewMode('list'); showViewMode = false"
+            class="w-full flex items-center justify-center p-2 transition-colors"
+            [class]="viewMode === 'list' ? 'text-orange-600 dark:text-orange-400' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700'"
+            title="Liste"
+          >
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M3 4h18v2H3V4zm0 7h18v2H3v-2zm0 7h18v2H3v-2z"/>
+            </svg>
+          </button>
+        </div>
+      </button>
+
+      <!-- Filters Button -->
+      <button 
+        (click)="showFilters = !showFilters"
+        class="flex flex-col items-center space-y-1 p-2 transition-colors"
+        [class]="showFilters ? 'text-orange-600 dark:text-orange-400' : 'text-gray-600 dark:text-gray-400'"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z"></path>
+        </svg>
+        <span class="text-xs font-medium">Filtreler</span>
+      </button>
+    </div>
+  </footer>
+
+  <!-- Search Overlay -->
+  <div 
+    *ngIf="showSearch"
+    class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center pt-20"
+    (click)="showSearch = false"
+  >
+    <div 
+      class="bg-white dark:bg-slate-800 rounded-2xl w-11/12 max-w-md p-6 shadow-2xl"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Yemek Ara</h3>
+        <button (click)="showSearch = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="relative">
+        <input 
+          [(ngModel)]="searchTerm"
+          type="text" 
+          placeholder="Yemek adı, malzeme veya kategori ara..."
+          class="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-400 focus:outline-none border border-gray-200 dark:border-slate-600"
+          (keyup.enter)="showSearch = false"
+        >
+        <svg class="absolute left-3 top-3 w-5 h-5 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+      </div>
+      
+      <div class="mt-4">
+        <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Popüler Aramalar</h4>
+        <div class="flex flex-wrap gap-2">
+          <button 
+            *ngFor="let term of ['Pizza', 'Burger', 'Salata', 'Tatlı', 'İçecek']"
+            (click)="searchTerm = term; showSearch = false"
+            class="px-3 py-1 bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 text-sm rounded-full hover:bg-orange-200 dark:hover:bg-orange-800 transition-colors"
+          >
+            {{ term }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- View Mode Overlay -->
+  <!-- Removed large modal - replaced with tooltip dropdown -->
+
+  <!-- Mobile Shopping Cart Bottom Sheet -->
+  <div 
+    *ngIf="showCart"
+    class="fixed inset-0 z-50 flex items-center justify-center p-4"
+    style="background: rgba(0,0,0,0.7);"
+    (click)="showCart = false"
+  >
+    <div 
+      class="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto p-6"
+      (click)="$event.stopPropagation()"
+    >
+      <button (click)="showCart = false" class="absolute top-4 right-4 bg-white/80 dark:bg-slate-700/80 text-gray-700 dark:text-gray-200 rounded-full p-2 shadow hover:bg-red-500 hover:text-white transition-all z-20" aria-label="Kapat">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+      <!-- Handle Bar -->
+      <div class="flex justify-center mb-4">
+        <div class="w-12 h-1 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
+      </div>
+
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white">Sepetim</h2>
+      </div>
+
+      <!-- Cart Items -->
+      <div *ngIf="cart.length > 0" class="space-y-4 mb-6">
+        <div 
+          *ngFor="let cartItem of cart; let i = index"
+          class="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-slate-700 rounded-lg"
+        >
+          <img 
+            [src]="getItemImage(cartItem.item)" 
+            [alt]="cartItem.item.name"
+            class="w-12 h-12 object-cover rounded-lg"
+          >
+          <div class="flex-1">
+            <h4 class="font-medium text-gray-900 dark:text-white text-sm">{{ cartItem.item.name }}</h4>
+            <p class="text-xs text-gray-600 dark:text-gray-400">{{ getPriceFormatted(cartItem.item.price) }}</p>
+          </div>
+          <div class="flex items-center space-x-2">
+            <button 
+              (click)="updateQuantity(i, -1)"
+              class="w-7 h-7 bg-gray-200 dark:bg-slate-600 rounded-full flex items-center justify-center hover:bg-gray-300 dark:hover:bg-slate-500 text-sm"
+            >
+              -
+            </button>
+            <span class="w-6 text-center text-sm dark:text-white">{{ cartItem.quantity }}</span>
+            <button 
+              (click)="updateQuantity(i, 1)"
+              class="w-7 h-7 bg-gray-200 dark:bg-slate-600 rounded-full flex items-center justify-center hover:bg-gray-300 dark:hover:bg-slate-500 text-sm"
+            >
+              +
+            </button>
+          </div>
+          <button 
+            (click)="removeFromCart(i)"
+            class="text-red-500 hover:text-red-700"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Empty Cart -->
+      <div *ngIf="cart.length === 0" class="text-center py-12">
+        <div class="text-6xl mb-4">🛒</div>
+        <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Sepetiniz boş</h3>
+        <p class="text-gray-600 dark:text-gray-400">Lezzetli yemekler ekleyerek başlayın!</p>
+      </div>
+
+      <!-- Cart Total -->
+      <div *ngIf="cart.length > 0" class="border-t border-gray-200 dark:border-slate-700 pt-4 mb-6">
+        <div class="flex justify-between items-center text-lg font-semibold dark:text-white">
+          <span>Toplam:</span>
+          <span>{{ getPriceFormatted(getCartTotal()) }}</span>
+        </div>
+      </div>
+
+      <!-- Cart Actions -->
+      <div *ngIf="cart.length > 0" class="space-y-3">
+        <button 
+          (click)="placeOrder()"
+          class="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white py-4 px-4 rounded-lg font-medium transition-colors"
+        >
+          Sipariş Ver ({{ getPriceFormatted(getCartTotal()) }})
+        </button>
+        <button 
+          (click)="clearCart()"
+          class="w-full bg-gray-200 dark:bg-slate-700 hover:bg-gray-300 dark:hover:bg-slate-600 text-gray-700 dark:text-gray-300 py-3 px-4 rounded-lg font-medium transition-colors"
+        >
+          Sepeti Temizle
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Item Detail Modal -->
+  <div 
+    *ngIf="showItemModal"
+    class="fixed inset-0 z-50 flex items-center justify-center p-4"
+    style="background: rgba(0,0,0,0.7);"
+    (click)="closeItemModal()"
+  >
+    <div 
+      *ngIf="selectedItem"
+      class="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto p-6"
+      (click)="$event.stopPropagation()"
+    >
+      <button (click)="closeItemModal()" class="absolute top-4 right-4 bg-white/80 dark:bg-slate-700/80 text-gray-700 dark:text-gray-200 rounded-full p-2 shadow hover:bg-red-500 hover:text-white transition-all z-20" aria-label="Kapat">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+      <!-- Item Image -->
+      <div class="relative h-48 bg-gradient-to-br from-slate-100 to-gray-100 dark:from-slate-700 dark:to-gray-700">
+        <img 
+          [src]="getItemImage(selectedItem)" 
+          [alt]="selectedItem.name"
+          class="w-full h-full object-cover"
+          onerror="this.src='https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=800&h=400&fit=crop'"
+        >
+        
+        <!-- Badges -->
+        <div class="absolute top-4 left-4 flex flex-wrap gap-2">
+          <span *ngIf="selectedItem.isPopular" class="bg-red-500 text-white text-sm px-3 py-1 rounded-full animate-pulse">
+            🔥 Popüler
+          </span>
+          <span *ngIf="selectedItem.isSpicy" class="bg-orange-500 text-white text-sm px-3 py-1 rounded-full">
+            🌶️ Acılı
+          </span>
+          <span *ngIf="selectedItem.isVegetarian" class="bg-green-500 text-white text-sm px-3 py-1 rounded-full">
+            🌱 Vejetaryen
+          </span>
+          <span *ngIf="selectedItem.isGlutenFree" class="bg-rose-500 text-white text-sm px-3 py-1 rounded-full">
+            🌾 Glutensiz
+          </span>
+        </div>
+      </div>
+
+      <div class="p-6">
+        <!-- Item Info -->
+        <div class="flex justify-between items-start mb-4">
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white">{{ selectedItem.name }}</h2>
+          <span class="text-3xl font-bold text-orange-600 dark:text-orange-400">{{ getPriceFormatted(selectedItem.price) }}</span>
+        </div>
+        
+        <p class="text-gray-600 dark:text-gray-400 mb-6">{{ selectedItem.description }}</p>
+
+        <!-- Nutrition & Info -->
+        <div class="grid grid-cols-2 gap-4 mb-6">
+          <div class="bg-gray-50 dark:bg-slate-700 p-4 rounded-lg">
+            <div class="text-sm text-gray-500 dark:text-gray-400">Kalori</div>
+            <div class="text-lg font-semibold dark:text-white">🔥 {{ selectedItem.calories }} kcal</div>
+          </div>
+          <div class="bg-gray-50 dark:bg-slate-700 p-4 rounded-lg">
+            <div class="text-sm text-gray-500 dark:text-gray-400">Hazırlama Süresi</div>
+            <div class="text-lg font-semibold dark:text-white">⏱️ {{ selectedItem.preparationTime }} dk</div>
+          </div>
+        </div>
+
+        <!-- Ingredients -->
+        <div class="mb-6">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">İçindekiler</h3>
+          <div class="flex flex-wrap gap-2">
+            <span 
+              *ngFor="let ingredient of selectedItem.ingredients"
+              class="bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 text-sm px-3 py-1 rounded-full"
+            >
+              {{ ingredient }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Allergens -->
+        <div *ngIf="selectedItem.allergens && selectedItem.allergens.length > 0" class="mb-6">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Alerjenler</h3>
+          <div class="flex flex-wrap gap-2">
+            <span 
+              *ngFor="let allergen of selectedItem.allergens"
+              class="bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 text-sm px-3 py-1 rounded-full"
+            >
+              ⚠️ {{ allergen }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Add to Cart Form -->
+        <div class="space-y-4">
+          <div class="flex items-center space-x-4">
+            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Adet:</label>
+            <div class="flex items-center space-x-2">
+              <button 
+                (click)="decreaseQuantity()"
+                class="w-8 h-8 bg-gray-200 dark:bg-slate-600 rounded-full flex items-center justify-center hover:bg-gray-300 dark:hover:bg-slate-500"
+              >
+                -
+              </button>
+              <span class="w-12 text-center font-medium dark:text-white">{{ selectedQuantity }}</span>
+              <button 
+                (click)="increaseQuantity()"
+                class="w-8 h-8 bg-gray-200 dark:bg-slate-600 rounded-full flex items-center justify-center hover:bg-gray-300 dark:hover:bg-slate-500"
+              >
+                +
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Özel İstekler</label>
+            <textarea 
+              [(ngModel)]="specialRequests"
+              rows="3"
+              placeholder="Özel isteklerinizi buraya yazabilirsiniz..."
+              class="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-400 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-white"
+            ></textarea>
+          </div>
+
+          <div class="flex space-x-3">
+            <button 
+              (click)="quickAddToCart(selectedItem)"
+              class="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white py-3 px-4 rounded-lg font-medium transition-all duration-300 transform hover:scale-105"
+              [disabled]="!selectedItem.available"
+            >
+              🚀 Sipariş Ver
+            </button>
+            <button 
+              (click)="addToCart()"
+              class="flex-1 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white py-3 px-4 rounded-lg font-medium transition-all duration-300 transform hover:scale-105"
+              [disabled]="!selectedItem.available"
+            >
+              🛒 Sepete Ekle
+            </button>
+          </div>
+          
+          <button 
+            (click)="closeItemModal()"
+            class="w-full mt-3 py-2 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
+          >
+            İptal
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 
